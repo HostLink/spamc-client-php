@@ -1,5 +1,5 @@
 {
-    "name": "winco/php-spamc",
+    "name": "winco/php-spamc-client",
     "description": "PHP Client for SPAMC",
     "type": "library",
     "require-dev": {
