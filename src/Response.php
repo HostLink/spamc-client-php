@@ -1,6 +1,6 @@
 <?php
 
-namespace Winco\Antispam\Spamc;
+namespace Spamc;
 
 class Response
 {

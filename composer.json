@@ -1,14 +1,16 @@
 {
-    "name": "winco/php-spamc-client",
+    "name": "hostlink/spamc-client-php",
     "description": "PHP Client for SPAMC",
     "type": "library",
-    "require-dev": {
-        "phpunit/phpunit": "^6.2"
-    },
     "authors": [
         {
             "name": "Inácio Corrêa",
             "email": "inacio.correa@winco.com.br"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {
+            "Spamc\\": "src/"
+        }
+    }
 }

@@ -1,24 +1,26 @@
 <?php
 
-namespace Winco\Antispam\Spamc;
+namespace Spamc;
+
+use Exception;
 
 /**
  * 
  * 
  *
- * @author   Inácio Corrêa <inacio.correa@winco.com.br>
+ * @author   Inï¿½cio Corrï¿½a <inacio.correa@winco.com.br>
  * @license  http://www.apache.org/licenses/LICENSE-2.0.html Apache License 2.0
  */
- 
+
 class Client
 {
-	private $hostname = 'localhost';
+    private $hostname = 'localhost';
     private $port     = '783';
-	private $fifo;
+    private $fifo;
 
     private $socket;
-    
-	private $protocolVersion = '1.5';
+
+    private $protocolVersion = '1.5';
 
     /**
      * Creates a new socket connection to Spamassassin server
@@ -26,18 +28,19 @@ class Client
     private function getSocket()
     {
         if (!empty($this->fifo)) {
-            $socket = fsockopen('unix://' . $this->fifo, NULL, $errno, $errstr);
+            $socket = fsockopen('unix://' . $this->fifo, -1, $errno, $errstr);
         } else {
             $socket = fsockopen($this->hostname, $this->port, $errno, $errstr);
         }
         if (!$socket) {
             throw new Exception(
-                "Could not connect to SpamAssassin: {$errstr}", $errno
+                "Could not connect to SpamAssassin: {$errstr}",
+                $errno
             );
         }
         return $socket;
     }
-	
+
     /**
      * Sends a command to the server and returns an object with the result
      *
@@ -52,9 +55,9 @@ class Client
         $cmd .= "Content-length: {$len}\r\n";
 
         if (!empty($this->user)) {
-            $cmd .= "User: " .$this->user . "\r\n";
+            $cmd .= "User: " . $this->user . "\r\n";
         }
-		
+
         if (!empty($additionalHeaders)) {
             foreach ($additionalHeaders as $header => $val) {
                 $cmd .= $header . ": " . $val . "\r\n";
@@ -141,14 +144,15 @@ class Client
              */
             if (preg_match(
                 '/X-Spam-Status: (Yes|No)\, score=(\d+\.\d) required=(\d+\.\d)/',
-                $header.$message,
-                $matches)) {
-                    ($matches[1] == 'Yes') ?
-                        $response->isSpam = true :
-                        $response->isSpam = false;
-                    $response->score    = (float) $matches[2];
-                    $response->thresold = (float) $matches[3];
-                }
+                $header . $message,
+                $matches
+            )) {
+                ($matches[1] == 'Yes') ?
+                    $response->isSpam = true :
+                    $response->isSpam = false;
+                $response->score    = (float) $matches[2];
+                $response->thresold = (float) $matches[3];
+            }
         }
         /* Used for report/revoke/learn */
         if (preg_match('/DidSet: (\S+)/', $header, $matches)) {
@@ -173,7 +177,7 @@ class Client
      */
     public function ping()
     {
-		$socket = $this->getSocket();
+        $socket = $this->getSocket();
         $this->write($socket, "PING SPAMC/{$this->protocolVersion}\r\n\r\n");
         list($headers, $message) = $this->read($socket);
         if (strpos($headers, "PONG") === false) {
